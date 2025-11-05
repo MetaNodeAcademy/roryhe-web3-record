@@ -22,7 +22,7 @@ func producer(ch chan int) {
 func consumer(ch chan int) {
 	for c := range ch {
 		fmt.Println("consumer ", c)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 }
 
