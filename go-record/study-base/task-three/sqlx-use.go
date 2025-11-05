@@ -22,21 +22,21 @@ func init() {
 
 type Employee struct {
 	ID         int64   `db:"id"`
-	Name       string  `db:"name"`
+	Name       string  `db:"Name"`
 	Department string  `db:"department"`
 	Salary     float64 `db:"salary"`
 }
 
 /*
 使用SQL扩展库进行查询
-假设你已经使用Sqlx连接到一个数据库，并且有一个 employees 表，包含字段 id 、 name 、 department 、 salary 。
+假设你已经使用Sqlx连接到一个数据库，并且有一个 employees 表，包含字段 id 、 Name 、 department 、 salary 。
 要求 ：
 编写Go代码，使用Sqlx查询 employees 表中所有部门为 "技术部" 的员工信息，并将结果映射到一个自定义的 Employee 结构体切片中。
 编写Go代码，使用Sqlx查询 employees 表中工资最高的员工信息，并将结果映射到一个 Employee 结构体中。
 */
 
 func queryData() {
-	sqlStr := "select id,name,department,salary from employees where department = ?"
+	sqlStr := "select id,Name,department,salary from employees where department = ?"
 	var employees = make([]Employee, 0)
 	err := db.Select(&employees, sqlStr, "技术部")
 	if err != nil {
@@ -47,7 +47,7 @@ func queryData() {
 	fmt.Printf("employees = %v\n", employees)
 
 	var maxSalary Employee
-	sqlStr = "select id,name,department,salary from employees order by salary desc limit 1"
+	sqlStr = "select id,Name,department,salary from employees order by salary desc limit 1"
 	err = db.Get(&maxSalary, sqlStr)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -72,7 +72,7 @@ type Book struct {
 }
 
 func queryData2() {
-	sqlStr := "select id,name,department,salary from books where price > ?"
+	sqlStr := "select id,Name,department,salary from books where price > ?"
 	var books = make([]Book, 0)
 	err := db.Select(&books, sqlStr, 50)
 	if err != nil {
