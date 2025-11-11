@@ -30,22 +30,28 @@ func SetupRoutes() *gin.Engine {
 	api := r.Group("/api")
 	{
 		loginApi := api.Group("/login")
-		loginApi.POST("", userHandler.Login)
-		loginApi.POST("/register", userHandler.CreateUser)
+		{
+			loginApi.POST("", userHandler.Login)
+			loginApi.POST("/register", userHandler.CreateUser)
+		}
+
 		// 用户相关路由
 		users := api.Group("/users")
 		users.Use(middleware.JWTAuth())
 		{
 			users.GET("", userHandler.GetAllUsers) // 获取所有用户
 		}
+
 		//文章相关路由
 		postRoutes := api.Group("/posts")
 		postRoutes.Use(middleware.JWTAuth())
-		postRoutes.POST("")    //创建文章
-		postRoutes.GET("")     //获取单个文章
-		postRoutes.GET("/all") //获取全部文章
-		postRoutes.PUT("")     // update 文章
-		postRoutes.DELETE("")  // delete 文章
+		{
+			postRoutes.POST("")    //创建文章
+			postRoutes.GET("")     //获取单个文章
+			postRoutes.GET("/all") //获取全部文章
+			postRoutes.PUT("")     // update 文章
+			postRoutes.DELETE("")  // delete 文章
+		}
 	}
 
 	return r
