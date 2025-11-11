@@ -25,6 +25,8 @@ func SetupRoutes() *gin.Engine {
 
 	// 创建用户处理器
 	userHandler := handler.NewUserHandler()
+	postHandler := handler.NewPostHandler()
+	commentHandler := handler.NewCommentHandler()
 
 	// API 路由组
 	api := r.Group("/api")
@@ -46,11 +48,18 @@ func SetupRoutes() *gin.Engine {
 		postRoutes := api.Group("/posts")
 		postRoutes.Use(middleware.JWTAuth())
 		{
-			postRoutes.POST("")    //创建文章
-			postRoutes.GET("")     //获取单个文章
-			postRoutes.GET("/all") //获取全部文章
-			postRoutes.PUT("")     // update 文章
-			postRoutes.DELETE("")  // delete 文章
+			postRoutes.POST("", postHandler.CreatePost)  //创建文章
+			postRoutes.GET("/:post_id", postHandler.Get) //获取单个文章
+			postRoutes.GET("/all", postHandler.GetAll)   //获取全部文章
+			postRoutes.PUT("", postHandler.Put)          // update 文章
+			postRoutes.DELETE("", postHandler.Delete)    // delete 文章
+		}
+
+		commentRoutes := api.Group("/comments")
+		commentRoutes.Use(middleware.JWTAuth())
+		{
+			commentRoutes.POST("", commentHandler.CreateComment)
+			commentRoutes.GET("/:post_id", commentHandler.GetByPostID)
 		}
 	}
 

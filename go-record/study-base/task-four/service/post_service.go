@@ -25,26 +25,41 @@ func NewPostService() PostService {
 }
 
 func (p *postService) CreatePost(post *models.Post) (uint, error) {
-	//TODO implement me
-	panic("implement me")
+	if err := p.db.Create(post).Error; err != nil {
+		return 0, err
+	}
+
+	return post.ID, nil
 }
 
 func (p *postService) GetALLPosts() ([]models.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	var posts []models.Post
+	if err := p.db.Find(&posts).Error; err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func (p *postService) GetPostById(postId uint) (*models.Post, error) {
-	//TODO implement me
-	panic("implement me")
+	var post models.Post
+	if err := p.db.Where("id = ?", postId).First(&post).Error; err != nil {
+		return nil, err
+	}
+
+	return &post, nil
 }
 
 func (p *postService) DeletePostById(postId uint) error {
-	//TODO implement me
-	panic("implement me")
+	if err := p.db.Delete(&models.Post{}, postId).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *postService) UpdatePost(post *models.Post) error {
-	//TODO implement me
-	panic("implement me")
+	if err := p.db.Save(post).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

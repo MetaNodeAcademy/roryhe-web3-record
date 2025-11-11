@@ -1,0 +1,68 @@
+###
+GET http://localhost:9080/health
+
+
+###
+POST http://localhost:9080/api/login/register
+Content-Type: application/json
+
+{
+  "name": "adminUser",
+  "email": "aannnaa@foxmail.com",
+  "password": "123456."
+}
+
+
+###
+POST http://localhost:9080/api/login
+Content-Type: application/json
+
+{
+  "name": "adminUser",
+  "password": "b5be656a7060dd3525027d6763c33ca0"
+}
+
+
+###
+GET http://localhost:9080/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+###
+
+POST http://localhost:9080/api/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+{
+  "title": "创建文章2",
+  "content": "我是文章内容,我是文章内容,我是文章内容。"
+}
+
+###
+GET http://localhost:9080/api/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+
+###
+GET http://localhost:9080/api/posts/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+###
+PUT http://localhost:9080/api/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+{
+  "id": 1,
+  "title": "我是修改后的标题",
+  "content": "123456"
+}
+
+###
+DELETE http://localhost:9080/api/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+{
+  "id": 2
+}

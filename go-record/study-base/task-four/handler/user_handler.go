@@ -47,6 +47,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("token", token, 60*60*24, "/", c.Request.Host, false, true)
+
 	utils.Success(c, token)
 }
 

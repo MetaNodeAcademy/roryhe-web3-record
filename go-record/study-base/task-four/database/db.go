@@ -23,7 +23,7 @@ func InitDB(dsn string) error {
 	}
 
 	// 自动迁移数据库表
-	err = DB.AutoMigrate(&models.User{})
+	err = DB.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{})
 	if err != nil {
 		return fmt.Errorf("数据库迁移失败: %w", err)
 	}
