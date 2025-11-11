@@ -66,3 +66,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c
 {
   "id": 2
 }
+
+
+###
+POST http://localhost:9080/api/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc
+
+{
+  "content": "评论13333",
+  "post_id": 1,
+  "user_id": 1
+}
+
+
+###
+GET http://localhost:9080/api/comments/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlzcyI6InlvdXItYXBwLW5hbWUiLCJzdWIiOiJ1c2VyIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNzYyOTM0MDY4LCJuYmYiOjE3NjI4NDc2NjgsImlhdCI6MTc2Mjg0NzY2OH0.EU4CWhyjs1XNN_TSLTBbbVaR4R--Zgb042rvt-1Hudc

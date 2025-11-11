@@ -22,11 +22,18 @@ func NewCommentService() CommentService {
 }
 
 func (c commentService) CreateComment(comment *models.Comment) (uint, error) {
-	//TODO implement me
-	panic("implement me")
+	if err := c.db.Create(&comment).Error; err != nil {
+		return 0, err
+	}
+
+	return comment.ID, nil
 }
 
 func (c commentService) GetCommentByPostID(id uint) ([]models.Comment, error) {
-	//TODO implement me
-	panic("implement me")
+	var comments []models.Comment
+	if err := c.db.Where("post_id = ?", id).Find(&comments).Error; err != nil {
+		return nil, err
+	}
+
+	return comments, nil
 }

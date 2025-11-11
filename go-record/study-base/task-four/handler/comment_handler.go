@@ -1,8 +1,12 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
+	"github.com/rory7/task-four/models"
 	"github.com/rory7/task-four/service"
+	"github.com/rory7/task-four/utils"
 )
 
 /**
@@ -21,6 +25,37 @@ func NewCommentHandler() *CommentHandler {
 	}
 }
 
-func (h CommentHandler) CreateComment(c *gin.Context) {}
+func (h CommentHandler) CreateComment(c *gin.Context) {
+	var comment models.Comment
+	err := c.ShouldBindJSON(&comment)
+	if err != nil {
+		utils.BadRequest(c, err.Error())
+		return
+	}
 
-func (h CommentHandler) GetByPostID(c *gin.Context) {}
+	ID, err := h.commentService.CreateComment(&comment)
+	if err != nil {
+		utils.InternalServerError(c, err.Error())
+		return
+	}
+
+	utils.Success(c, ID)
+}
+
+func (h CommentHandler) GetByPostID(c *gin.Context) {
+	postID := c.Param("post_id")
+	if !utils.ValidateRequired(postID) {
+		utils.BadRequest(c, "post_id is required")
+		return
+	}
+
+	id, _ := strconv.ParseUint(postID, 10, 64)
+	comments, err := h.commentService.GetCommentByPostID(uint(id))
+	if err != nil {
+		utils.InternalServerError(c, err.Error())
+		return
+	}
+
+	utils.Success(c, comments)
+
+}
