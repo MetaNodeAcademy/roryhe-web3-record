@@ -1,2 +1,6 @@
 /.idea/
 /go-record/study-base/task-three/blog.db
+# AI Log Plugin 推荐忽略项
+.specstory/
+.ailog/
+/.cursor/
