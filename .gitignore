@@ -4,3 +4,5 @@
 .specstory/
 .ailog/
 /.cursor/
+/solidity/node_modules/
+/solidity/package-lock.json
