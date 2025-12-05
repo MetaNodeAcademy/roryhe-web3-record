@@ -1,6 +1,5 @@
-import {expect} from 'chai'
-import hre from "hardhat";
-
+const {expect} = require("chai");
+const hre = require("hardhat");
 const {ethers} = hre;
 
 describe("dichotomy", function () {

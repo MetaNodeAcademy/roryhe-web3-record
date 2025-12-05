@@ -7,3 +7,4 @@
 /solidity/node_modules/
 /solidity/package-lock.json
 /go-record/study-base/task-four/go.sum
+/solidity/.env
