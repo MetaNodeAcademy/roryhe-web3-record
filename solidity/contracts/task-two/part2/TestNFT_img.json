@@ -1,0 +1,11 @@
+{
+  "name": "TestNFT_img",
+  "description": "这是我用 Solidity 创建的第一个 NFT。",
+  "image": "ipfs://bafkreibo55v3qcvfla35nsqnmiflvh7vjyyyg2x45pvtdxvzm65fovznom",
+  "attributes": [
+    {
+      "trait_type": "Level",
+      "value": "1"
+    }
+  ]
+}
