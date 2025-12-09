@@ -2,7 +2,7 @@ const hre = require("hardhat");
 
 async function main() {
     // 获取合约工厂
-    const Token = await hre.ethers.getContractFactory("TestNFT");
+    const Token = await hre.ethers.getContractFactory("BeggingContract");
 
     // 部署合约（构造函数无参数）
     const token = await Token.deploy();
