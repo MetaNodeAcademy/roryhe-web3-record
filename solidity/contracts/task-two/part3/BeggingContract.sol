@@ -57,17 +57,10 @@ contract BeggingContract {
     }
 
     //排行榜前十
-    function topDonors() external view returns (address[10] memory, uint256[10] memory){
-        address[10] memory addrs;
-        uint256[10] memory amounts;
-
-        for (uint256 i = 0; i < 10; i++) {
-            addrs[i] = topsAddress[i];
-            amounts[i] = topsAmount[i];
-        }
-
-        return (addrs, amounts);
+    function topDonors() external view returns (address[10] memory addrs, uint256[10] memory amounts){
+        return (topsAddress, topsAmount);
     }
+
 
     //更新排序
     function _updateTops(address donor) internal {
