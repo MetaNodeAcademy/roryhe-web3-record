@@ -5,6 +5,8 @@
 │ ├── NFTContract.sol # NFT合约
 │ ├── AuctionContract.sol # 主拍卖合约（UUPS 可升级）
 │
+├── docs/
+│ ├── coverage # 测试报告
 ├── scripts/
 │ ├── deploy.js # 一键部署 UUPS 代理
 │ ├── upgrade.js # 升级逻辑合约
