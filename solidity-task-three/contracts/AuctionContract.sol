@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.22;
 
 import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/upgrades-core/contracts/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
-contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
+contract AuctionContract is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     //拍卖结构数据
     struct Auction {
         address seller;//卖家
@@ -28,15 +28,28 @@ contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
     mapping(uint256 => Auction) public auctions;
     uint256 public auctionCounter;
 
+    uint256 public feeRate;        // 千分比费率，例如 200 = 2%
+    address public feeRecipient;   // 手续费接收地址
+
     //预言机
     mapping(address => AggregatorV3Interface) public priceFeeds;
 
     event AuctionCreateEvent(uint256 actionId, address seller, address nftContract, uint256 tokenId, uint256 endTime, address paymentToken);
 
     function initialize() public initializer {
+        __Ownable_init(msg.sender);
+        __UUPSUpgradeable_init();
+        feeRate = 200;//2%
+        feeRecipient = msg.sender;
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+    //修改手续费
+    function updateFee(uint256 rate) external onlyOwner {
+        require(rate <= 1000 && rate >= 0, "fee rate needs to be within a reasonable range");
+        feeRate = rate;
+    }
 
     //上架NFT
     function createAuction(address nftContract, uint256 tokenId) external returns (uint256 auctionCounterId){
@@ -49,6 +62,9 @@ contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
             nftContract: nftContract,
             tokenId: tokenId,
             endTime: block.timestamp + 1 days,
+            highestBidder: address(0),
+            highestBid: 0,
+            highestBidAmount: 0,
             paymentToken: address(0),//默认ETH出价
             settled: false
         });
@@ -84,7 +100,7 @@ contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
         if (auction.highestBidder != address(0)) {
             if (auction.paymentToken == address(0)) {
 //            ETH出价，返回给ETH
-                bool success = payable(auction.highestBidder).call{value: auction.highestBidAmount}("");
+                (bool success,) = payable(auction.highestBidder).call{value: auction.highestBidAmount}("");
                 require(success, "ETH bid return to bidder failed");
             } else {
 //            ERC20出价返回给ERC20
@@ -106,17 +122,25 @@ contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
 
         auction.settled = true;
 
+        uint256 fee = auction.highestBidAmount * feeRate / 10000;
+        uint256 sellerReceive = auction.highestBidAmount - fee;
+
         if (auction.highestBidder != address(0)) {
             //NFT 转移给最高出价者，钱 转给卖家
             IERC721(auction.nftContract).transferFrom(address(this), auction.highestBidder, auction.tokenId);
 
             if (auction.paymentToken == address(0)) {
-                bool success = payable(auction.seller).call{value: auction.highestBidAmount}("");
+
+                (bool fs,) = payable(feeRecipient).call{value: fee}("");
+                require(fs, "fee transfer failed");
+
+                (bool success,) = payable(auction.seller).call{value: sellerReceive}("");
                 require(success, "bid pay for seller failed");
             } else {
-                IERC20(auction.paymentToken).transfer(auction.seller, auction.highestBidAmount);
-            }
 
+                IERC20 token = IERC20(auction.paymentToken);
+                token.transfer(feeRecipient, fee);
+                token.transfer(auction.seller, sellerReceive);}
         } else {
             //NFT 退回卖家
             IERC721(auction.nftContract).transferFrom(address(this), auction.seller, auction.tokenId);
@@ -132,11 +156,9 @@ contract AuctionContract is Initializable, UUPSUpgradeable, Ownable {
     }
 
     //设置预言机
-    function setPriceFeeds(address token, address feedAddress, uint8 decimals) external onlyOwner {
+    function setPriceFeeds(address token, address feedAddress) external onlyOwner {
         priceFeeds[token] = AggregatorV3Interface(feedAddress);
     }
 
     //动态手续费
-
-    //UUPS升级
 }
