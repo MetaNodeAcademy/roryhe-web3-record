@@ -208,3 +208,13 @@ func main() {
 	}
 	fmt.Println("result", result)
 }
+
+/**
+ * output：
+blockchain-hash 0xe7df8ebad086554c63488121110ea462c87d3a40750ec616c79d2c8f77293dbb
+blockchain-time 1765443708
+blockchain-transactions 112
+call simple.sol func add success 0x2fed2cb859014b906aaba9f10657ec846373399b3879cffe235f6e988402ceff
+NextTokenId: 1
+result 1
+*/
