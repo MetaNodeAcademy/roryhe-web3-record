@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/local/go-eth-demo/task1/constracts"
 	"github.com/local/go-eth-demo/task1/utils"
 )
 
@@ -34,17 +36,11 @@ func queryBlockchain(client *ethclient.Client, blockNumber int64) (*QueryResult,
 }
 
 func sendTransaction(client *ethclient.Client, key string) (string, error) {
-	privateKey, err := crypto.HexToECDSA(key)
+	privateKey, fromAddress, err := ecdsaTool(key)
 	if err != nil {
-		fmt.Println("Error loading private key", err.Error())
 		return "", err
 	}
-	publicKey := privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		fmt.Println("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
-	}
-	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -63,13 +59,13 @@ func sendTransaction(client *ethclient.Client, key string) (string, error) {
 
 	tx := types.NewTransaction(nonce, toAddress, wei, gasLimit, gasPrice, nil)
 
-	chainID, err := client.NetworkID(context.Background())
+	chainId, err := client.NetworkID(context.Background())
 	if err != nil {
 		fmt.Println(err.Error())
 		return "", err
 	}
 
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainId), privateKey)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -82,7 +78,98 @@ func sendTransaction(client *ethclient.Client, key string) (string, error) {
 		return "", err
 	}
 
+	fmt.Println("执行成功")
+
 	return signedTx.Hash().Hex(), nil
+}
+
+func ecdsaTool(key string) (*ecdsa.PrivateKey, common.Address, error) {
+	privateKey, err := crypto.HexToECDSA(key)
+	if err != nil {
+		fmt.Println("Error loading private key", err.Error())
+		return nil, common.Address{}, err
+	}
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		fmt.Println("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+		return nil, common.Address{}, err
+	}
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	return privateKey, fromAddress, nil
+}
+
+func useAbigenTool(client *ethclient.Client, key string) (int, error) {
+	privateKey, fromAddress, err := ecdsaTool(key)
+	if err != nil {
+		return 0, err
+	}
+
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		fmt.Println(err.Error())
+		return 0, err
+	}
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		fmt.Println(err.Error())
+		return 0, err
+	}
+
+	chainId, err := client.NetworkID(context.Background())
+	if err != nil {
+		fmt.Println(err.Error())
+		return 0, err
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return 0, err
+	}
+
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)     // in wei
+	auth.GasLimit = uint64(300000) // in units
+	auth.GasPrice = gasPrice
+
+	//solAddress, tx, solInstance, err := constracts.DeployConstracts(auth, client)
+	//
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//	return 0, err
+	//}
+	//
+	//fmt.Println(solAddress.Hex())
+	//fmt.Println(tx.Hash().Hex())
+	//_ = solInstance
+
+	//部署完成，需要加载调用合约并执行内部方法
+	//simpleContracts, err := constracts.NewConstracts(solAddress, client)
+	simpleContracts, err := constracts.NewConstracts(common.HexToAddress("0x18CeF2d6Eb6B332Ddd1804E7e9F9D5673c089CEF"), client)
+	if err != nil {
+		fmt.Println("create contracts instance fail", err.Error())
+		return 0, err
+	}
+
+	callOpts := &bind.CallOpts{Context: context.Background()}
+
+	addTx, err := simpleContracts.Add(auth)
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("call simple.sol func add success", addTx.Hash().Hex())
+
+	tokenId, err := simpleContracts.NextTokenId(callOpts)
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("NextTokenId:", tokenId)
+
+	return int(tokenId.Int64()), nil
 }
 
 func main() {
@@ -107,11 +194,17 @@ func main() {
 	fmt.Println("blockchain-time", blockchain.timestamp)
 	fmt.Println("blockchain-transactions", blockchain.transactionVolume)
 
-	transactionHex, err := sendTransaction(client, cfg.PrivateKey)
+	//transactionHex, err := sendTransaction(client, cfg.PrivateKey)
+	//if err != nil {
+	//	return
+	//}
+
+	// 执行后交易hash：0x8845d66bcee0719826b4d5fdb3d3df46ec6ca934246aed8e2dc7b6cb93a05b2d
+	//fmt.Println("transactionHex", transactionHex)
+
+	result, err := useAbigenTool(client, cfg.PrivateKey)
 	if err != nil {
 		return
 	}
-
-	// 执行后交易hash：0x8845d66bcee0719826b4d5fdb3d3df46ec6ca934246aed8e2dc7b6cb93a05b2d
-	fmt.Println("transactionHex", transactionHex)
+	fmt.Println("result", result)
 }
