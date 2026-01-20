@@ -10,3 +10,5 @@
 .env
 /go-record/dapp-training/go-eth/task2/.obsidian/
 /contract-practice/metanode-stake/package-lock.json
+/contract-practice/foundry/cache/
+/contract-practice/foundry/out/
